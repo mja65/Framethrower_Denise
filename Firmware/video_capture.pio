@@ -1,0 +1,37 @@
+; File: video_capture.pio
+.program video_capture
+
+.wrap_target
+pull
+mov X, OSR
+
+wait 0 gpio 20
+wait 1 gpio 20
+irq set 0
+
+pixelloop:
+    wait 0 gpio 22
+    wait 1 gpio 22 [2]
+    in pins, 32
+    jmp x-- pixelloop
+.wrap 
+
+% c-sdk {
+static inline void video_capture_program_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_config c = video_capture_program_get_default_config(offset);
+    sm_config_set_in_pins(&c, pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, 0, 32, false);
+
+    sm_config_set_wrap(&c, offset + video_capture_wrap_target, offset + video_capture_wrap);
+    sm_config_set_in_shift(&c, true, true, 1);
+    //sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+
+    // Clear IRQ flag before starting, and make sure flag doesn't actually
+    // assert a system-level interrupt (we're using it as a status flag)
+    //pio_set_irq0_source_enabled(pio, (enum pio_interrupt_source) ((uint) pis_interrupt0 + sm), true);
+    //pio_interrupt_clear(pio, sm);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, false);
+}
+%}
