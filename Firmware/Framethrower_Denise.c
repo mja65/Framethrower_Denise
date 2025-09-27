@@ -30,8 +30,7 @@
 #define SAMPLES_PER_LINE 800
 
 // GPIO Pin-Definitionen
-//#define hsync 20
-#define vsync 23
+#define csync 23
 #define pixelclock 22
 
 // Globale Puffer und FIFO
@@ -45,7 +44,8 @@ uint sm_video, sm_vsync;
 
 // Interrupt Global
 volatile bool vsync_detected = false;
-
+volatile uint32_t lines;
+volatile uint32_t last_total_lines;
 
 // =============================================================================
 // --- Interrupt Service Routine ---
@@ -53,10 +53,23 @@ volatile bool vsync_detected = false;
 
 // Wird bei VSYNC vom PIO aufgerufen
 void __not_in_flash_func(pio_irq_handler)() {
+ 
     if (pio_interrupt_get(pio, 0)) {
-        pio_interrupt_clear(pio, 0); 
         vsync_detected = true;
+        last_total_lines = lines;
+        lines = 0;     
+        pio_interrupt_clear(pio, 0); 
     }
+
+    if (pio_interrupt_get(pio, 1)) {
+        lines++;   
+        pio_interrupt_clear(pio, 1); 
+    }
+
+}
+
+void __not_in_flash_func(gpio_callback)(uint gpio, uint32_t events) {
+    lines++;
 }
 
 
@@ -161,10 +174,10 @@ void setup_vsync_detect_sm(uint offset) {
     sm_vsync = pio_claim_unused_sm(pio, true);
     pio_sm_config c = vsync_detect_program_get_default_config(offset);
     sm_config_set_clkdiv(&c, 34.0f); //PIO SM für Vsync läuft mit ~10MHz
-    pio_gpio_init(pio, vsync);
-    gpio_set_dir(vsync, GPIO_IN);
-    sm_config_set_jmp_pin(&c, vsync);
-    sm_config_set_in_pins(&c, vsync);
+    pio_gpio_init(pio, csync);
+    gpio_set_dir(csync, GPIO_IN);
+    sm_config_set_jmp_pin(&c, csync);
+    sm_config_set_in_pins(&c, csync);
     pio_sm_init(pio, sm_vsync, offset, &c);
     pio_sm_set_enabled(pio, sm_vsync, true);
 }
@@ -189,6 +202,13 @@ void core1_entry() {
     pio_set_irq0_source_enabled(pio, pis_interrupt0, true);
     irq_set_exclusive_handler(PIO0_IRQ_0, pio_irq_handler);
     irq_set_enabled(PIO0_IRQ_0, true);
+
+    pio_set_irq1_source_enabled(pio, pis_interrupt1, true);
+    irq_set_exclusive_handler(PIO0_IRQ_1, pio_irq_handler);
+    irq_set_enabled(PIO0_IRQ_1, true);
+
+
+    //gpio_set_irq_enabled_with_callback(vsync, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
     uint16_t y = 0;
     while (1) {
@@ -244,9 +264,9 @@ int main(void) {
     //gpio_set_dir(hsync, GPIO_IN);
     //gpio_set_input_hysteresis_enabled(hsync, true);
 
-    gpio_init(vsync);
-    gpio_set_dir(vsync, GPIO_IN);
-    gpio_set_input_hysteresis_enabled(vsync, true);
+    gpio_init(csync);
+    gpio_set_dir(csync, GPIO_IN);
+    gpio_set_input_hysteresis_enabled(csync, true);
 
     gpio_init(pixelclock);
     gpio_set_dir(pixelclock, GPIO_IN);

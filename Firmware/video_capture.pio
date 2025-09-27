@@ -11,9 +11,9 @@ wait 1 gpio 23 [5]
 wait 0 gpio 20
 
 pixelloop:
-    wait 1 gpio 20[6]
+    wait 1 gpio 20[5]
     in pins, 32
-    wait 0 gpio 20[6]
+    wait 0 gpio 20[5]
     in pins, 32
     jmp x-- pixelloop
 .wrap 
@@ -47,8 +47,9 @@ static inline void video_capture_program_init(PIO pio, uint sm, uint offset, uin
 ; In diesem Zustand sucht das Programm aktiv nach einem langen LOW-Impuls.
 .wrap_target
 start:
-    wait 1 pin 0 [31]
-    wait 0 pin 0 [31]
+    wait 1 pin 0 ;[31]
+    wait 0 pin 0 ;[31]
+    irq set 1            ; Interrupt auslösen
     set x, 31
 
 low_loop:
@@ -58,13 +59,13 @@ low_loop:
 
 fire_irq:
     irq set 0            ; Interrupt auslösen
-    wait 0 irq 0 [31]    ; Warten, bis CPU den IRQ bestätigt hat (Synchronisation)
+    ;wait 0 irq 0 [31]    ; Warten, bis CPU den IRQ bestätigt hat (Synchronisation)
 
 rearm_wait_high:
-    wait 1 pin 0 [31]
+    wait 1 pin 0; [31]
 
 rearm_countdown:
-    set y, 19            ; Äußerer Zähler (20 Iterationen)
+    set y, 18           ; Äußerer Zähler (20 Iterationen)
 
 outer_rearm_loop:
     set x, 31            ; Innerer Zähler (32 Iterationen)

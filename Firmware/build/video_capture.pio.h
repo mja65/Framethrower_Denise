@@ -23,9 +23,9 @@ static const uint16_t video_capture_program_instructions[] = {
     0x2517, //  2: wait   0 gpio, 23             [5]
     0x2597, //  3: wait   1 gpio, 23             [5]
     0x2014, //  4: wait   0 gpio, 20
-    0x2694, //  5: wait   1 gpio, 20             [6]
+    0x2594, //  5: wait   1 gpio, 20             [5]
     0x4000, //  6: in     pins, 32
-    0x2614, //  7: wait   0 gpio, 20             [6]
+    0x2514, //  7: wait   0 gpio, 20             [5]
     0x4000, //  8: in     pins, 32
     0x0045, //  9: jmp    x--, 5
             //     .wrap
@@ -75,16 +75,16 @@ static inline void video_capture_program_init(PIO pio, uint sm, uint offset, uin
 
 static const uint16_t vsync_detect_program_instructions[] = {
             //     .wrap_target
-    0x3fa0, //  0: wait   1 pin, 0               [31]
-    0x3f20, //  1: wait   0 pin, 0               [31]
-    0xe03f, //  2: set    x, 31
-    0x00c0, //  3: jmp    pin, 0
-    0xa242, //  4: nop                           [2]
-    0x0043, //  5: jmp    x--, 3
-    0xc000, //  6: irq    nowait 0
-    0x3f40, //  7: wait   0 irq, 0               [31]
-    0x3fa0, //  8: wait   1 pin, 0               [31]
-    0xe053, //  9: set    y, 19
+    0x20a0, //  0: wait   1 pin, 0
+    0x2020, //  1: wait   0 pin, 0
+    0xc001, //  2: irq    nowait 1
+    0xe03f, //  3: set    x, 31
+    0x00c0, //  4: jmp    pin, 0
+    0xa242, //  5: nop                           [2]
+    0x0044, //  6: jmp    x--, 4
+    0xc000, //  7: irq    nowait 0
+    0x20a0, //  8: wait   1 pin, 0
+    0xe052, //  9: set    y, 18
     0xe03f, // 10: set    x, 31
     0xa342, // 11: nop                           [3]
     0x004b, // 12: jmp    x--, 11
