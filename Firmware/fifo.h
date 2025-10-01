@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #define FIFO_SIZE (4 * 1024)
 
@@ -22,5 +23,8 @@ bool fifo_write_buffer(fifo_t *f, const uint16_t *buffer, uint32_t count);
 bool fifo_read_buffer(fifo_t *f, uint16_t *buffer, uint32_t count);
 bool fifo_write_buffer_dma(fifo_t *f, const uint16_t *buffer, uint32_t count);
 bool fifo_read_buffer_dma(fifo_t *f, uint16_t *buffer, uint32_t count);
-
+void dma_memcpy(void *dst, const void *src, size_t len);
+void dma_memcpy2(void *dst, const void *src, size_t len);
+void dma_memcpy3(void *dst, const void *src, size_t len);
+void dma_memcpy4(void *dst, const void *src, size_t len);
 #endif // FIFO_H

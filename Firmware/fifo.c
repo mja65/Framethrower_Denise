@@ -80,30 +80,32 @@ bool fifo_read_buffer(fifo_t *f, uint16_t *buffer, uint32_t count) {
 void __not_in_flash_func(dma_memcpy)(void *dst, const void *src, size_t len)
 {
 
-    dma_channel_config c = dma_channel_get_default_config(2);
-    channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
-    channel_config_set_read_increment(&c, true);
-    channel_config_set_write_increment(&c, true);
-    channel_config_set_dreq(&c, DREQ_FORCE);
-    dma_channel_configure(
-        2,
-        &c,
-        dst,     // Zieladresse
-        src,     // Quelladresse
-        len / 4, // Anzahl der 32-Bit-Wörter
-        true     // Starte den Transfer
-    );
-    dma_channel_wait_for_finish_blocking(2);
-}
-
-void __not_in_flash_func(dma_memcpy2)(void *dst, const void *src, size_t len)
-{
-
     dma_channel_config c = dma_channel_get_default_config(1);
     channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
     channel_config_set_read_increment(&c, true);
     channel_config_set_write_increment(&c, true);
     channel_config_set_dreq(&c, DREQ_FORCE);
+    channel_config_set_high_priority( &c, true);
+    dma_channel_configure(
+        1,
+        &c,
+        dst,     // Zieladresse
+        src,     // Quelladresse
+        len / 4, // Anzahl der 32-Bit-Wörter
+        true     // Starte den Transfer
+    );
+    dma_channel_wait_for_finish_blocking(1);
+}
+
+void __not_in_flash_func(dma_memcpy2)(void *dst, const void *src, size_t len)
+{
+
+    dma_channel_config c = dma_channel_get_default_config(2);
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
+    channel_config_set_read_increment(&c, true);
+    channel_config_set_write_increment(&c, true);
+    channel_config_set_dreq(&c, DREQ_FORCE);
+    channel_config_set_high_priority( &c, true);
     dma_channel_configure(
         2,
         &c,
@@ -112,8 +114,30 @@ void __not_in_flash_func(dma_memcpy2)(void *dst, const void *src, size_t len)
         len / 4, // Anzahl der 32-Bit-Wörter
         true     // Starte den Transfer
     );
-    //dma_channel_wait_for_finish_blocking(1);
+    //dma_channel_wait_for_finish_blocking(2);
 }
+
+void __not_in_flash_func(dma_memcpy3)(void *dst, const void *src, size_t len)
+{
+
+    dma_channel_config c = dma_channel_get_default_config(3);
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
+    channel_config_set_read_increment(&c, true);
+    channel_config_set_write_increment(&c, true);
+    channel_config_set_dreq(&c, DREQ_FORCE);
+    channel_config_set_high_priority( &c, true);
+    dma_channel_configure(
+        3,
+        &c,
+        dst,     // Zieladresse
+        src,     // Quelladresse
+        len / 4, // Anzahl der 32-Bit-Wörter
+        true     // Starte den Transfer
+    );
+    //dma_channel_wait_for_finish_blocking(3);
+}
+
+
 
 
 bool __not_in_flash_func(fifo_write_buffer_dma)(fifo_t *f, const uint16_t *buffer, uint32_t count) {

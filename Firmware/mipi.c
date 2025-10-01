@@ -18,6 +18,7 @@ void DMASetup(uint8_t *data) {
     dma_channel_config c = dma_channel_get_default_config(0);
     channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
     channel_config_set_dreq(&c, DREQ_HSTX);
+    channel_config_set_high_priority( &c, true);
 
         dma_channel_configure(
         0,          // Channel to be configured
@@ -226,7 +227,7 @@ void __not_in_flash_func(mipiCsiSendLong)(int type, uint8_t *data, int len) {
     dma_channel_transfer_from_buffer_now(0,preamble,5);
     dma_channel_wait_for_finish_blocking(0);
 
-    dma_channel_transfer_from_buffer_now(0,data,1440);
+    dma_channel_transfer_from_buffer_now(0,data,len);
     dma_channel_wait_for_finish_blocking(0);
 
     dma_channel_transfer_from_buffer_now(0,end,2);

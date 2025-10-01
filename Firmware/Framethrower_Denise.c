@@ -13,6 +13,7 @@
 #include "hardware/vreg.h"
 #include "hardware/structs/ioqspi.h"
 #include "hardware/structs/sio.h"
+#include "hardware/structs/bus_ctrl.h"
 #include "pico/multicore.h"
 #include "pico/time.h"
 #include <stdlib.h>
@@ -28,20 +29,23 @@
 #define VIDEO_LINE_LENGTH 1024
 #define LINES_PER_FRAME 288
 #define LINES_PER_FRAME_NTSC 240
+#define ACTIVE_VIDEO 720
+#define HBLANK 68
 #define SAMPLES_PER_LINE 800
 #define VBLANK_LINES 21
-
-//const uint32_t LINES_PER_FRAME = 288;
-//const uint32_t LINES_PER_FRAME_NTSC = 240;
 
 // GPIO Pin-Definitionen
 #define csync 23
 #define pixelclock 22
 
 // Globale Puffer und FIFO
-__attribute__((aligned(4))) fifo_t my_fifo;
-__attribute__((aligned(4))) uint16_t videoline_in[VIDEO_LINE_LENGTH];
-__attribute__((aligned(4))) uint16_t line_buffer_rgb444[VIDEO_LINE_LENGTH];
+//__attribute__((aligned(4))) fifo_t my_fifo;
+//__attribute__((aligned(4))) uint16_t videoline_in[VIDEO_LINE_LENGTH];
+//__attribute__((aligned(4))) uint16_t videoline_out[VIDEO_LINE_LENGTH];
+//__attribute__((aligned(4))) uint16_t line_buffer_rgb444[VIDEO_LINE_LENGTH];
+__attribute__((aligned(4))) uint16_t *framebuffer;
+__attribute__((aligned(4))) uint16_t line1[VIDEO_LINE_LENGTH];
+__attribute__((aligned(4))) uint16_t line2[VIDEO_LINE_LENGTH];
 
 // PIO Globals
 PIO pio = pio0;
@@ -53,7 +57,9 @@ volatile uint32_t lines;
 volatile uint32_t last_total_lines;
 volatile bool laced = false;
 volatile bool isPAL = false;
-volatile uint16_t lines_to_capture = 0;
+volatile bool video_go = false;
+volatile bool vsync_go = false;
+volatile bool is_odd_field = true;
 
 // =============================================================================
 // --- Interrupt Service Routine ---
@@ -63,20 +69,19 @@ volatile uint16_t lines_to_capture = 0;
 void __not_in_flash_func(pio_irq_handler)() {
  
     if (pio_interrupt_get(pio, 0)) {
+        pio_interrupt_clear(pio, 0); 
         vsync_detected = true;
         laced = last_total_lines == lines  ? false : true;
         isPAL = last_total_lines <= 300 ? false : true;
+        is_odd_field = (lines % 2 != 0);
         last_total_lines = lines;
-        lines_to_capture = last_total_lines - 23;
-        lines = 0;     
-        pio_interrupt_clear(pio, 0); 
+        lines = 0;
     }
 
     if (pio_interrupt_get(pio, 1)) {
-        lines++;   
         pio_interrupt_clear(pio, 1); 
+        lines++;   
     }
-
 }
 
 
@@ -142,22 +147,18 @@ void __not_in_flash_func(reduce_brightness_50)(uint16_t* line, int count) {
     }
 }
 
-void __not_in_flash_func(get_pio_line)(void) {
-    uint32_t pixel12;
-    pio_sm_clear_fifos(pio, sm_video);
-    pio_sm_restart(pio, sm_video);
+void __not_in_flash_func(get_pio_line)(uint16_t* line_buffer) {
     pio_sm_put_blocking(pio, sm_video, SAMPLES_PER_LINE / 2 - 1);
     pio_sm_set_enabled(pio, sm_video, true);
-
-    for (int i = 0; i < SAMPLES_PER_LINE; ++i) {
-        while ((pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + sm_video))) != 0) {
-        }
-        pixel12 = pio->rxf[sm_video];
-        line_buffer_rgb444[i] = convert_12_to_565_fast(pixel12);
+    for (int i = 0; i < HBLANK; ++i) {
+        (void)pio_sm_get_blocking(pio, sm_video);
+    }
+    for (int i = 0; i < SAMPLES_PER_LINE-HBLANK; ++i) {
+        line_buffer[i] = convert_12_to_565_fast(pio_sm_get_blocking(pio, sm_video));
     }
     pio_sm_set_enabled(pio, sm_video, false);
 }
-
+   
 bool __no_inline_not_in_flash_func(get_bootsel_button)() {
     const uint CS_PIN_INDEX = 1;
     uint32_t flags = save_and_disable_interrupts();
@@ -216,22 +217,21 @@ void core1_entry() {
 
 
     uint16_t y = 0;
-    //uint16_t lines_to_capture = 0;
 
     while (1) {
         if (vsync_detected) {
             vsync_detected = false; // Flag zurücksetzen
+            vsync_go = true;
 
-            // Vertical Blanking abwarten
-            for (y = 0; y < VBLANK_LINES; y++) {
-                get_pio_line();
-            }
+            //Vblank abwarten
+            while (lines <= (laced && !(last_total_lines % 2)? VBLANK_LINES : VBLANK_LINES-1)){};
+            //while (lines <= (laced && is_odd_field ? VBLANK_LINES : VBLANK_LINES-1)){};
 
             // Aktive Videozeilen einlesen und in die FIFO schreiben
             for (y = 0; y < (isPAL? LINES_PER_FRAME-1 : LINES_PER_FRAME_NTSC-1); y++) {
-                get_pio_line();
-                // H-Blanking überspringen (Offset 69) und Daten in die FIFO schreiben
-                while (!fifo_write_buffer_dma(&my_fifo, line_buffer_rgb444 + 69, VIDEO_LINE_LENGTH)) {}
+                get_pio_line(line1);
+                video_go=true;
+                while(!video_go){}
             }
         }
     }
@@ -280,8 +280,14 @@ int main(void) {
     uint offset_video = pio_add_program(pio, &video_capture_program);
     setup_vsync_detect_sm(offset_vsync);
     setup_video_capture_sm(offset_video);
+    pio_sm_put_blocking(pio, sm_video, SAMPLES_PER_LINE / 2 - 1);
 
-    fifo_init(&my_fifo);
+    //fifo_init(&my_fifo);
+    size_t num_pixels = (size_t)ACTIVE_VIDEO * LINES_PER_FRAME;
+    size_t buffer_size_bytes = num_pixels * sizeof(uint16_t);
+    framebuffer = (uint16_t *)malloc(buffer_size_bytes);
+
+    bus_ctrl_hw->priority = BUSCTRL_BUS_PRIORITY_DMA_W_BITS | BUSCTRL_BUS_PRIORITY_DMA_R_BITS;
 
     multicore_launch_core1(core1_entry);
 
@@ -292,34 +298,49 @@ int main(void) {
     bool frame_active = false;
     bool scanline = false;
 
+
     while (1) {
         if (!frame_active) {
             // Warten auf den Beginn eines neuen Frames
-            if (!fifo_is_empty(&my_fifo)) {
+            if(vsync_go){
+                vsync_go = false;    
                 mipiCsiFrameStart();
                 frame_active = true;
                 lines_read_count = 0;
             }
         } else {
             // Frame wird aktiv gelesen und gesendet
-            if (fifo_read_buffer_dma(&my_fifo, videoline_in, VIDEO_LINE_LENGTH)) {
-                lines_read_count++;
+            if(video_go){
+                dma_memcpy2(line2,line1, ACTIVE_VIDEO*2);
+                video_go=false; 
 
-                // Sende die Zeile ZWEIMAL (Line Doubling)
-                mipiCsiSendLong(0x22, (uint8_t*)videoline_in, 1440);
-                if(scanline){reduce_brightness_50(videoline_in,720);}
-                mipiCsiSendLong(0x22, (uint8_t*)videoline_in, 1440);
-/*
-                if(!isPAL) {
-                    for (uint8_t i = 0; i < LINES_PER_FRAME - LINES_PER_FRAME_NTSC; i++) {
-                        mipiCsiSendLong(0x22, (uint8_t*)videoline_in, 1440);
+                if(laced) {
+                    if(isPAL){
+                        if (is_odd_field) {
+                            mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
+                            mipiCsiSendLong(0x22, (uint8_t*) framebuffer + (ACTIVE_VIDEO*2 * lines_read_count), ACTIVE_VIDEO*2);
+                        } else {
+                            mipiCsiSendLong(0x22, (uint8_t*) framebuffer + (ACTIVE_VIDEO*2 * lines_read_count), ACTIVE_VIDEO*2);
+                            mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
+                        }
+                        dma_memcpy3(framebuffer + (ACTIVE_VIDEO * lines_read_count),line2, ACTIVE_VIDEO*2);
+                    }else{ //TODO NTSC Deinterlace
+                        if (is_odd_field) {
+                            mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
+                            mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
+                        } else {                            
+                            mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
+                            mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
+                        }
                     }
+                } else {
+                    mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2); 
+                    mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
                 }
 
-*/
+                lines_read_count++;
 
                 // Prüfen, ob der Frame vollständig übertragen wurde
-                //if (lines_read_count >= (isPAL ? LINES_PER_FRAME : LINES_PER_FRAME_NTSC)) {
                 if (lines_read_count >= (isPAL ? LINES_PER_FRAME-1 : LINES_PER_FRAME_NTSC-1)) {
                     mipiCsiFrameEnd();
                     frame_active = false;
