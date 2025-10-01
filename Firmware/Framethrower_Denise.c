@@ -181,7 +181,7 @@ bool __no_inline_not_in_flash_func(get_bootsel_button)() {
 void setup_vsync_detect_sm(uint offset) {
     sm_vsync = pio_claim_unused_sm(pio, true);
     pio_sm_config c = vsync_detect_program_get_default_config(offset);
-    sm_config_set_clkdiv(&c, 34.0f); //PIO SM für Vsync läuft mit ~10MHz
+    sm_config_set_clkdiv(&c, 32.0f); //PIO SM für Vsync läuft mit ~10MHz
     pio_gpio_init(pio, csync);
     gpio_set_dir(csync, GPIO_IN);
     sm_config_set_jmp_pin(&c, csync);
@@ -241,7 +241,7 @@ void core1_entry() {
 // =============================================================================
 // --- Main Funktion (Core 0) ---
 // =============================================================================
-int main(void) {
+int __not_in_flash_func(main)(void) {
     uint clkdiv = 3;
     uint rxdelay = 3;
     hw_write_masked(
@@ -251,7 +251,7 @@ int main(void) {
         QMI_M0_TIMING_CLKDIV_BITS | QMI_M0_TIMING_RXDELAY_BITS
     );
     busy_wait_us(1000);
-    set_sys_clock_khz(340000, true);
+    set_sys_clock_khz(320000, true);
 
     // Initialisiere alle nicht-MIPI-GPIOs
     for (uint i = 0; i <= 47; i++) {
