@@ -2,8 +2,8 @@
 .program video_capture
 
 ;.wrap_target
-pull
-mov X, OSR
+;pull
+;mov X, OSR
 
 wait 1 gpio 23 [5]
 wait 0 gpio 23 [5]

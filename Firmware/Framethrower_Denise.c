@@ -220,6 +220,7 @@ void __not_in_flash_func(reduce_brightness_50_asm_fast)(uint16_t* line, int coun
           [n]   "+&r" (n)
         : [mask] "r" (mask)
         : "r4", "r5", "r6", "r7", "memory", "cc"
+        
     );
 
 handle_remainder:
@@ -232,6 +233,10 @@ handle_remainder:
 void __not_in_flash_func(get_pio_line)(uint16_t* line_buffer) {
     pio_sm_put_blocking(pio, sm_video, ((SAMPLES_PER_LINE+HBLANK) / 2 )- 1);
     pio_sm_set_enabled(pio, sm_video, true);
+    pio_sm_exec(pio, sm_video, pio_encode_pull(false,false));
+    hw_set_bits(&pio->sm[sm_video].shiftctrl, PIO_SM0_SHIFTCTRL_FJOIN_RX_BITS);
+    pio_sm_exec(pio, sm_video, pio_encode_mov( pio_x , pio_osr));
+    //pio_sm_set_enabled(pio, sm_video, true);
     for (uint i = 0; i < HBLANK; ++i) {
         (void)pio_sm_get_blocking(pio, sm_video);
     }
@@ -241,6 +246,7 @@ void __not_in_flash_func(get_pio_line)(uint16_t* line_buffer) {
     for (uint i = 0; i < SAMPLES_PER_LINE; ++i) {
         line_buffer[i] = convert_12_to_565_reordered_fast(pio_sm_get_blocking(pio, sm_video));
     }
+    hw_clear_bits(&pio->sm[sm_video].shiftctrl, PIO_SM0_SHIFTCTRL_FJOIN_RX_BITS);
     pio_sm_set_enabled(pio, sm_video, false);
 }
 
