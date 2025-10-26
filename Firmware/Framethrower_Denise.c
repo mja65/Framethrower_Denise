@@ -239,33 +239,6 @@ void __not_in_flash_func(get_pio_line)(uint16_t* line_buffer) {
     pio_sm_set_enabled(pio_video, sm_video, false);
 }
 
-bool __no_inline_not_in_flash_func(get_bootsel_button)() {
-    const uint CS_PIN_INDEX = 1;
-    uint32_t flags = save_and_disable_interrupts();
-    hw_write_masked(&ioqspi_hw->io[CS_PIN_INDEX].ctrl,
-                    GPIO_OVERRIDE_LOW << IO_QSPI_GPIO_QSPI_SS_CTRL_OEOVER_LSB,
-                    IO_QSPI_GPIO_QSPI_SS_CTRL_OEOVER_BITS);
-    for (volatile int i = 0; i < 1000; ++i);
-    bool button_state = !(sio_hw->gpio_hi_in & SIO_GPIO_HI_IN_QSPI_CSN_BITS);
-    hw_write_masked(&ioqspi_hw->io[CS_PIN_INDEX].ctrl,
-                    GPIO_OVERRIDE_NORMAL << IO_QSPI_GPIO_QSPI_SS_CTRL_OEOVER_LSB,
-                    IO_QSPI_GPIO_QSPI_SS_CTRL_OEOVER_BITS);
-
-    restore_interrupts(flags);
-
-    return button_state;
-}
-
-bool button_pressed_previously = false;
-void __no_inline_not_in_flash_func(check_button)() {
-    bool button_is_pressed_now = get_bootsel_button();
-    if (button_pressed_previously && !button_is_pressed_now) {
-        scanline_level = (scanline_level + 1) % 5;
-        //delay(50); 
-    }
-    button_pressed_previously = button_is_pressed_now;
-}
-
 // =============================================================================
 // --- PIO Setup ---
 // =============================================================================
@@ -390,8 +363,6 @@ int __not_in_flash_func(main)(void) {
     __attribute__((aligned(4))) uint16_t temp_scanline[VIDEO_LINE_LENGTH];
 
     while (1) {
-
-        //check_button();
 
         if (!frame_active) {
             // Warten auf den Beginn eines neuen Frames

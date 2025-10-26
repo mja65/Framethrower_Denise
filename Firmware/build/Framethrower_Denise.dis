@@ -39,23 +39,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  17 .comment      00000045  00000000  00000000  00005fd4  2**0
                   CONTENTS, READONLY
- 18 .debug_info   0002b0e8  00000000  00000000  00006019  2**0
+ 18 .debug_info   0002a95d  00000000  00000000  00006019  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_abbrev 00006906  00000000  00000000  00031101  2**0
+ 19 .debug_abbrev 000068da  00000000  00000000  00030976  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_loclists 00014521  00000000  00000000  00037a07  2**0
+ 20 .debug_loclists 00014465  00000000  00000000  00037250  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_aranges 00000d00  00000000  00000000  0004bf28  2**3
+ 21 .debug_aranges 00000cf0  00000000  00000000  0004b6b8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_rnglists 00003d3d  00000000  00000000  0004cc28  2**0
+ 22 .debug_rnglists 00003ce9  00000000  00000000  0004c3a8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 23 .debug_line   0001a071  00000000  00000000  00050965  2**0
+ 23 .debug_line   00019ea4  00000000  00000000  00050091  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 24 .debug_str    00006d8a  00000000  00000000  0006a9d6  2**0
+ 24 .debug_str    00006c34  00000000  00000000  00069f35  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 25 .debug_frame  00002610  00000000  00000000  00071760  2**2
+ 25 .debug_frame  000025e0  00000000  00000000  00070b6c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 26 .debug_line_str 0000016e  00000000  00000000  00073d70  2**0
+ 26 .debug_line_str 0000016e  00000000  00000000  0007314c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Y:/Projects/FramethrowerDenise/Framethrower_Denise/Firmware/build/Framethrower_Denise.elf:     file format elf32-littlearm
@@ -3999,7 +3999,7 @@ Disassembly of section .data:
 200001f2:	4770      	bx	lr
 200001f4:	f44f 62b4 	mov.w	r2, #1440	@ 0x5a0
 200001f8:	2100      	movs	r1, #0
-200001fa:	f000 bb21 	b.w	20000840 <__memset_veneer>
+200001fa:	f000 bb25 	b.w	20000848 <__memset_veneer>
 200001fe:	490d      	ldr	r1, [pc, #52]	@ (20000234 <set_brightness_fast_levels.constprop.0+0x78>)
 20000200:	1f03      	subs	r3, r0, #4
 20000202:	f200 509c 	addw	r0, r0, #1436	@ 0x59c
@@ -4080,7 +4080,7 @@ Disassembly of section .data:
 200002d2:	dd2b      	ble.n	2000032c <set_brightness_fast_levels+0xf0>
 200002d4:	2100      	movs	r1, #0
 200002d6:	ea4f 028c 	mov.w	r2, ip, lsl #2
-200002da:	f000 fab1 	bl	20000840 <__memset_veneer>
+200002da:	f000 fab5 	bl	20000848 <__memset_veneer>
 200002de:	07e0      	lsls	r0, r4, #31
 200002e0:	d5d5      	bpl.n	2000028e <set_brightness_fast_levels+0x52>
 200002e2:	2300      	movs	r3, #0
@@ -4132,75 +4132,75 @@ Disassembly of section .data:
 20000362:	4669      	mov	r1, sp
 20000364:	ab02      	add	r3, sp, #8
 20000366:	aa01      	add	r2, sp, #4
-20000368:	f000 fa6e 	bl	20000848 <__check_sys_clock_khz_veneer>
+20000368:	f000 fa8a 	bl	20000880 <__check_sys_clock_khz_veneer>
 2000036c:	b918      	cbnz	r0, 20000376 <main+0x36>
 2000036e:	498f      	ldr	r1, [pc, #572]	@ (200005ac <main+0x26c>)
 20000370:	488f      	ldr	r0, [pc, #572]	@ (200005b0 <main+0x270>)
-20000372:	f000 fa8d 	bl	20000890 <__panic_veneer>
+20000372:	f000 fa65 	bl	20000840 <__panic_veneer>
 20000376:	2400      	movs	r4, #0
 20000378:	e9dd 1201 	ldrd	r1, r2, [sp, #4]
 2000037c:	9800      	ldr	r0, [sp, #0]
-2000037e:	f000 fa7b 	bl	20000878 <__set_sys_clock_pll_veneer>
+2000037e:	f000 fa87 	bl	20000890 <__set_sys_clock_pll_veneer>
 20000382:	4625      	mov	r5, r4
 20000384:	4620      	mov	r0, r4
-20000386:	f000 fa63 	bl	20000850 <__gpio_init_veneer>
+20000386:	f000 fa73 	bl	20000870 <__gpio_init_veneer>
 2000038a:	ec45 4044 	gpioc_bit_oe_put r4, r5
 2000038e:	2101      	movs	r1, #1
 20000390:	4620      	mov	r0, r4
-20000392:	f000 fa79 	bl	20000888 <__gpio_set_input_hysteresis_enabled_veneer>
+20000392:	f000 fa41 	bl	20000818 <__gpio_set_input_hysteresis_enabled_veneer>
 20000396:	4620      	mov	r0, r4
 20000398:	2200      	movs	r2, #0
 2000039a:	2101      	movs	r1, #1
 2000039c:	3401      	adds	r4, #1
-2000039e:	f000 fa67 	bl	20000870 <__gpio_set_pulls_veneer>
+2000039e:	f000 fa5f 	bl	20000860 <__gpio_set_pulls_veneer>
 200003a2:	2c30      	cmp	r4, #48	@ 0x30
 200003a4:	d1ee      	bne.n	20000384 <main+0x44>
 200003a6:	2017      	movs	r0, #23
-200003a8:	f000 fa52 	bl	20000850 <__gpio_init_veneer>
+200003a8:	f000 fa62 	bl	20000870 <__gpio_init_veneer>
 200003ac:	2417      	movs	r4, #23
 200003ae:	ec45 4044 	gpioc_bit_oe_put r4, r5
 200003b2:	2200      	movs	r2, #0
 200003b4:	2101      	movs	r1, #1
 200003b6:	2016      	movs	r0, #22
-200003b8:	f000 fa5a 	bl	20000870 <__gpio_set_pulls_veneer>
+200003b8:	f000 fa52 	bl	20000860 <__gpio_set_pulls_veneer>
 200003bc:	2101      	movs	r1, #1
 200003be:	4620      	mov	r0, r4
-200003c0:	f000 fa62 	bl	20000888 <__gpio_set_input_hysteresis_enabled_veneer>
+200003c0:	f000 fa2a 	bl	20000818 <__gpio_set_input_hysteresis_enabled_veneer>
 200003c4:	2016      	movs	r0, #22
-200003c6:	f000 fa43 	bl	20000850 <__gpio_init_veneer>
+200003c6:	f000 fa53 	bl	20000870 <__gpio_init_veneer>
 200003ca:	2416      	movs	r4, #22
 200003cc:	ec45 4044 	gpioc_bit_oe_put r4, r5
 200003d0:	2200      	movs	r2, #0
 200003d2:	4620      	mov	r0, r4
 200003d4:	2101      	movs	r1, #1
-200003d6:	f000 fa4b 	bl	20000870 <__gpio_set_pulls_veneer>
+200003d6:	f000 fa43 	bl	20000860 <__gpio_set_pulls_veneer>
 200003da:	2101      	movs	r1, #1
 200003dc:	4620      	mov	r0, r4
-200003de:	f000 fa53 	bl	20000888 <__gpio_set_input_hysteresis_enabled_veneer>
+200003de:	f000 fa1b 	bl	20000818 <__gpio_set_input_hysteresis_enabled_veneer>
 200003e2:	2015      	movs	r0, #21
-200003e4:	f000 fa34 	bl	20000850 <__gpio_init_veneer>
+200003e4:	f000 fa44 	bl	20000870 <__gpio_init_veneer>
 200003e8:	2415      	movs	r4, #21
 200003ea:	ec45 4044 	gpioc_bit_oe_put r4, r5
 200003ee:	2200      	movs	r2, #0
 200003f0:	4620      	mov	r0, r4
 200003f2:	2101      	movs	r1, #1
-200003f4:	f000 fa3c 	bl	20000870 <__gpio_set_pulls_veneer>
+200003f4:	f000 fa34 	bl	20000860 <__gpio_set_pulls_veneer>
 200003f8:	4620      	mov	r0, r4
 200003fa:	4c6e      	ldr	r4, [pc, #440]	@ (200005b4 <main+0x274>)
 200003fc:	2101      	movs	r1, #1
-200003fe:	f000 fa43 	bl	20000888 <__gpio_set_input_hysteresis_enabled_veneer>
+200003fe:	f000 fa0b 	bl	20000818 <__gpio_set_input_hysteresis_enabled_veneer>
 20000402:	496d      	ldr	r1, [pc, #436]	@ (200005b8 <main+0x278>)
 20000404:	6820      	ldr	r0, [r4, #0]
-20000406:	f000 fa3b 	bl	20000880 <__pio_add_program_veneer>
+20000406:	f000 fa47 	bl	20000898 <__pio_add_program_veneer>
 2000040a:	496c      	ldr	r1, [pc, #432]	@ (200005bc <main+0x27c>)
 2000040c:	4606      	mov	r6, r0
 2000040e:	6820      	ldr	r0, [r4, #0]
-20000410:	f000 fa36 	bl	20000880 <__pio_add_program_veneer>
+20000410:	f000 fa42 	bl	20000898 <__pio_add_program_veneer>
 20000414:	4605      	mov	r5, r0
 20000416:	4630      	mov	r0, r6
 20000418:	f000 fa26 	bl	20000868 <__setup_vsync_detect_sm_veneer>
 2000041c:	4628      	mov	r0, r5
-2000041e:	f000 fa1b 	bl	20000858 <__setup_video_capture_sm_veneer>
+2000041e:	f000 fa33 	bl	20000888 <__setup_video_capture_sm_veneer>
 20000422:	2301      	movs	r3, #1
 20000424:	4a66      	ldr	r2, [pc, #408]	@ (200005c0 <main+0x280>)
 20000426:	6811      	ldr	r1, [r2, #0]
@@ -4217,10 +4217,10 @@ Disassembly of section .data:
 20000442:	f842 6021 	str.w	r6, [r2, r1, lsl #2]
 20000446:	4860      	ldr	r0, [pc, #384]	@ (200005c8 <main+0x288>)
 20000448:	601d      	str	r5, [r3, #0]
-2000044a:	f000 fa25 	bl	20000898 <__multicore_launch_core1_veneer>
-2000044e:	f000 f9eb 	bl	20000828 <__mipi_init_veneer>
+2000044a:	f000 f9ed 	bl	20000828 <__multicore_launch_core1_veneer>
+2000044e:	f000 f9ff 	bl	20000850 <__mipi_init_veneer>
 20000452:	4620      	mov	r0, r4
-20000454:	f000 f9ec 	bl	20000830 <__DMASetup_veneer>
+20000454:	f000 f9f0 	bl	20000838 <__DMASetup_veneer>
 20000458:	4d5c      	ldr	r5, [pc, #368]	@ (200005cc <main+0x28c>)
 2000045a:	4e5d      	ldr	r6, [pc, #372]	@ (200005d0 <main+0x290>)
 2000045c:	f8df 9188 	ldr.w	r9, [pc, #392]	@ 200005e8 <main+0x2a8>
@@ -4259,7 +4259,7 @@ Disassembly of section .data:
 200004b6:	d06d      	beq.n	20000594 <main+0x254>
 200004b8:	4947      	ldr	r1, [pc, #284]	@ (200005d8 <main+0x298>)
 200004ba:	a802      	add	r0, sp, #8
-200004bc:	f000 f9b0 	bl	20000820 <__memcpy_veneer>
+200004bc:	f000 f9cc 	bl	20000858 <__memcpy_veneer>
 200004c0:	4b47      	ldr	r3, [pc, #284]	@ (200005e0 <main+0x2a0>)
 200004c2:	a802      	add	r0, sp, #8
 200004c4:	6819      	ldr	r1, [r3, #0]
@@ -4372,7 +4372,7 @@ Disassembly of section .data:
 200005fe:	b083      	sub	sp, #12
 20000600:	9200      	str	r2, [sp, #0]
 20000602:	f88d 3004 	strb.w	r3, [sp, #4]
-20000606:	f000 f917 	bl	20000838 <__start_hstx_veneer>
+20000606:	f000 f90b 	bl	20000820 <__start_hstx_veneer>
 2000060a:	f04f 42a0 	mov.w	r2, #1342177280	@ 0x50000000
 2000060e:	2305      	movs	r3, #5
 20000610:	f8c2 d000 	str.w	sp, [r2]
@@ -4380,7 +4380,7 @@ Disassembly of section .data:
 20000616:	6913      	ldr	r3, [r2, #16]
 20000618:	015b      	lsls	r3, r3, #5
 2000061a:	d4fc      	bmi.n	20000616 <mipiCsiFrameStart+0x1e>
-2000061c:	f000 f8fc 	bl	20000818 <__stop_hstx_veneer>
+2000061c:	f000 f908 	bl	20000830 <__stop_hstx_veneer>
 20000620:	b003      	add	sp, #12
 20000622:	f85d fb04 	ldr.w	pc, [sp], #4
 20000626:	bf00      	nop
@@ -4392,7 +4392,7 @@ Disassembly of section .data:
 2000062e:	e893 0003 	ldmia.w	r3, {r0, r1}
 20000632:	9000      	str	r0, [sp, #0]
 20000634:	f88d 1004 	strb.w	r1, [sp, #4]
-20000638:	f000 f8fe 	bl	20000838 <__start_hstx_veneer>
+20000638:	f000 f8f2 	bl	20000820 <__start_hstx_veneer>
 2000063c:	f04f 42a0 	mov.w	r2, #1342177280	@ 0x50000000
 20000640:	2305      	movs	r3, #5
 20000642:	f8c2 d000 	str.w	sp, [r2]
@@ -4400,7 +4400,7 @@ Disassembly of section .data:
 20000648:	6913      	ldr	r3, [r2, #16]
 2000064a:	015b      	lsls	r3, r3, #5
 2000064c:	d4fc      	bmi.n	20000648 <mipiCsiFrameEnd+0x20>
-2000064e:	f000 f8e3 	bl	20000818 <__stop_hstx_veneer>
+2000064e:	f000 f8ef 	bl	20000830 <__stop_hstx_veneer>
 20000652:	b003      	add	sp, #12
 20000654:	f85d fb04 	ldr.w	pc, [sp], #4
 20000658:	10002728 	.word	0x10002728
@@ -4416,7 +4416,7 @@ Disassembly of section .data:
 2000066c:	9002      	str	r0, [sp, #8]
 2000066e:	f88d 100c 	strb.w	r1, [sp, #12]
 20000672:	f8ad c004 	strh.w	ip, [sp, #4]
-20000676:	f000 f8df 	bl	20000838 <__start_hstx_veneer>
+20000676:	f000 f8d3 	bl	20000820 <__start_hstx_veneer>
 2000067a:	f04f 40a0 	mov.w	r0, #1342177280	@ 0x50000000
 2000067e:	2305      	movs	r3, #5
 20000680:	aa02      	add	r2, sp, #8
@@ -4439,7 +4439,7 @@ Disassembly of section .data:
 200006ac:	6913      	ldr	r3, [r2, #16]
 200006ae:	015b      	lsls	r3, r3, #5
 200006b0:	d4fc      	bmi.n	200006ac <mipiCsiSendLong+0x50>
-200006b2:	f000 f8b1 	bl	20000818 <__stop_hstx_veneer>
+200006b2:	f000 f8bd 	bl	20000830 <__stop_hstx_veneer>
 200006b6:	b005      	add	sp, #20
 200006b8:	bd30      	pop	{r4, r5, pc}
 200006ba:	bf00      	nop
@@ -4484,7 +4484,7 @@ Disassembly of section .data:
 20000722:	f38c 8810 	msr	PRIMASK, ip
 20000726:	4630      	mov	r0, r6
 20000728:	4629      	mov	r1, r5
-2000072a:	f000 f899 	bl	20000860 <__best_effort_wfe_or_timeout_veneer>
+2000072a:	f000 f8a5 	bl	20000878 <__best_effort_wfe_or_timeout_veneer>
 2000072e:	b9e8      	cbnz	r0, 2000076c <mutex_enter_block_until+0x64>
 20000730:	6821      	ldr	r1, [r4, #0]
 20000732:	f3ef 8c10 	mrs	ip, PRIMASK
@@ -4571,73 +4571,73 @@ Disassembly of section .data:
 20000814:	4770      	bx	lr
 20000816:	bf00      	nop
 
-20000818 <__stop_hstx_veneer>:
-20000818:	f85f f000 	ldr.w	pc, [pc]	@ 2000081c <__stop_hstx_veneer+0x4>
-2000081c:	10000585 	.word	0x10000585
+20000818 <__gpio_set_input_hysteresis_enabled_veneer>:
+20000818:	f85f f000 	ldr.w	pc, [pc]	@ 2000081c <__gpio_set_input_hysteresis_enabled_veneer+0x4>
+2000081c:	10000c91 	.word	0x10000c91
 
-20000820 <__memcpy_veneer>:
-20000820:	f85f f000 	ldr.w	pc, [pc]	@ 20000824 <__memcpy_veneer+0x4>
-20000824:	10002451 	.word	0x10002451
+20000820 <__start_hstx_veneer>:
+20000820:	f85f f000 	ldr.w	pc, [pc]	@ 20000824 <__start_hstx_veneer+0x4>
+20000824:	100007c1 	.word	0x100007c1
 
-20000828 <__mipi_init_veneer>:
-20000828:	f85f f000 	ldr.w	pc, [pc]	@ 2000082c <__mipi_init_veneer+0x4>
-2000082c:	10000a59 	.word	0x10000a59
+20000828 <__multicore_launch_core1_veneer>:
+20000828:	f85f f000 	ldr.w	pc, [pc]	@ 2000082c <__multicore_launch_core1_veneer+0x4>
+2000082c:	1000236d 	.word	0x1000236d
 
-20000830 <__DMASetup_veneer>:
-20000830:	f85f f000 	ldr.w	pc, [pc]	@ 20000834 <__DMASetup_veneer+0x4>
-20000834:	10000a29 	.word	0x10000a29
+20000830 <__stop_hstx_veneer>:
+20000830:	f85f f000 	ldr.w	pc, [pc]	@ 20000834 <__stop_hstx_veneer+0x4>
+20000834:	10000585 	.word	0x10000585
 
-20000838 <__start_hstx_veneer>:
-20000838:	f85f f000 	ldr.w	pc, [pc]	@ 2000083c <__start_hstx_veneer+0x4>
-2000083c:	100007c1 	.word	0x100007c1
+20000838 <__DMASetup_veneer>:
+20000838:	f85f f000 	ldr.w	pc, [pc]	@ 2000083c <__DMASetup_veneer+0x4>
+2000083c:	10000a29 	.word	0x10000a29
 
-20000840 <__memset_veneer>:
-20000840:	f85f f000 	ldr.w	pc, [pc]	@ 20000844 <__memset_veneer+0x4>
-20000844:	100023b5 	.word	0x100023b5
+20000840 <__panic_veneer>:
+20000840:	f85f f000 	ldr.w	pc, [pc]	@ 20000844 <__panic_veneer+0x4>
+20000844:	10000d35 	.word	0x10000d35
 
-20000848 <__check_sys_clock_khz_veneer>:
-20000848:	f85f f000 	ldr.w	pc, [pc]	@ 2000084c <__check_sys_clock_khz_veneer+0x4>
-2000084c:	100018ed 	.word	0x100018ed
+20000848 <__memset_veneer>:
+20000848:	f85f f000 	ldr.w	pc, [pc]	@ 2000084c <__memset_veneer+0x4>
+2000084c:	100023b5 	.word	0x100023b5
 
-20000850 <__gpio_init_veneer>:
-20000850:	f85f f000 	ldr.w	pc, [pc]	@ 20000854 <__gpio_init_veneer+0x4>
-20000854:	10000ced 	.word	0x10000ced
+20000850 <__mipi_init_veneer>:
+20000850:	f85f f000 	ldr.w	pc, [pc]	@ 20000854 <__mipi_init_veneer+0x4>
+20000854:	10000a59 	.word	0x10000a59
 
-20000858 <__setup_video_capture_sm_veneer>:
-20000858:	f85f f000 	ldr.w	pc, [pc]	@ 2000085c <__setup_video_capture_sm_veneer+0x4>
-2000085c:	100004c5 	.word	0x100004c5
+20000858 <__memcpy_veneer>:
+20000858:	f85f f000 	ldr.w	pc, [pc]	@ 2000085c <__memcpy_veneer+0x4>
+2000085c:	10002451 	.word	0x10002451
 
-20000860 <__best_effort_wfe_or_timeout_veneer>:
-20000860:	f85f f000 	ldr.w	pc, [pc]	@ 20000864 <__best_effort_wfe_or_timeout_veneer+0x4>
-20000864:	10001571 	.word	0x10001571
+20000860 <__gpio_set_pulls_veneer>:
+20000860:	f85f f000 	ldr.w	pc, [pc]	@ 20000864 <__gpio_set_pulls_veneer+0x4>
+20000864:	10000c69 	.word	0x10000c69
 
 20000868 <__setup_vsync_detect_sm_veneer>:
 20000868:	f85f f000 	ldr.w	pc, [pc]	@ 2000086c <__setup_vsync_detect_sm_veneer+0x4>
 2000086c:	10000401 	.word	0x10000401
 
-20000870 <__gpio_set_pulls_veneer>:
-20000870:	f85f f000 	ldr.w	pc, [pc]	@ 20000874 <__gpio_set_pulls_veneer+0x4>
-20000874:	10000c69 	.word	0x10000c69
+20000870 <__gpio_init_veneer>:
+20000870:	f85f f000 	ldr.w	pc, [pc]	@ 20000874 <__gpio_init_veneer+0x4>
+20000874:	10000ced 	.word	0x10000ced
 
-20000878 <__set_sys_clock_pll_veneer>:
-20000878:	f85f f000 	ldr.w	pc, [pc]	@ 2000087c <__set_sys_clock_pll_veneer+0x4>
-2000087c:	10001769 	.word	0x10001769
+20000878 <__best_effort_wfe_or_timeout_veneer>:
+20000878:	f85f f000 	ldr.w	pc, [pc]	@ 2000087c <__best_effort_wfe_or_timeout_veneer+0x4>
+2000087c:	10001571 	.word	0x10001571
 
-20000880 <__pio_add_program_veneer>:
-20000880:	f85f f000 	ldr.w	pc, [pc]	@ 20000884 <__pio_add_program_veneer+0x4>
-20000884:	100020ad 	.word	0x100020ad
+20000880 <__check_sys_clock_khz_veneer>:
+20000880:	f85f f000 	ldr.w	pc, [pc]	@ 20000884 <__check_sys_clock_khz_veneer+0x4>
+20000884:	100018ed 	.word	0x100018ed
 
-20000888 <__gpio_set_input_hysteresis_enabled_veneer>:
-20000888:	f85f f000 	ldr.w	pc, [pc]	@ 2000088c <__gpio_set_input_hysteresis_enabled_veneer+0x4>
-2000088c:	10000c91 	.word	0x10000c91
+20000888 <__setup_video_capture_sm_veneer>:
+20000888:	f85f f000 	ldr.w	pc, [pc]	@ 2000088c <__setup_video_capture_sm_veneer+0x4>
+2000088c:	100004c5 	.word	0x100004c5
 
-20000890 <__panic_veneer>:
-20000890:	f85f f000 	ldr.w	pc, [pc]	@ 20000894 <__panic_veneer+0x4>
-20000894:	10000d35 	.word	0x10000d35
+20000890 <__set_sys_clock_pll_veneer>:
+20000890:	f85f f000 	ldr.w	pc, [pc]	@ 20000894 <__set_sys_clock_pll_veneer+0x4>
+20000894:	10001769 	.word	0x10001769
 
-20000898 <__multicore_launch_core1_veneer>:
-20000898:	f85f f000 	ldr.w	pc, [pc]	@ 2000089c <__multicore_launch_core1_veneer+0x4>
-2000089c:	1000236d 	.word	0x1000236d
+20000898 <__pio_add_program_veneer>:
+20000898:	f85f f000 	ldr.w	pc, [pc]	@ 2000089c <__pio_add_program_veneer+0x4>
+2000089c:	100020ad 	.word	0x100020ad
 
 200008a0 <scanline_level>:
 200008a0:	00000002                                ....
