@@ -80,6 +80,7 @@ target_compile_definitions(Framethrower_Denise PRIVATE
 )
 
 set_property(TARGET Framethrower_Denise APPEND_STRING PROPERTY LINK_FLAGS "-Wl,--print-memory-usage")
+set_property(TARGET Framethrower_Denise PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 pico_add_extra_outputs(Framethrower_Denise)
 
