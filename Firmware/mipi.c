@@ -11,9 +11,12 @@
 #include "hardware/dma.h"
 #include "mipi.h"
 
-void DMASetup(uint8_t *data) { 
+#define PREAMBLE_LEN 5
+#define MAX_DATA_LEN 1440
+#define END_LEN 2
+#define MAX_TOTAL_LEN (PREAMBLE_LEN + MAX_DATA_LEN + END_LEN) // = 1447 Bytes
 
-    //dmachan = dma_claim_unused_channel(true);
+void DMASetup(uint8_t *data) { 
 
     dma_channel_config c = dma_channel_get_default_config(0);
     channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
@@ -34,7 +37,7 @@ void DMASetup(uint8_t *data) {
 
 static inline void start_hstx(void) {
 
-    uint8_t buffer2[128]={0};
+    uint8_t lead_in_zeros[32]={0};
 
     while (!(hstx_fifo_hw->stat & HSTX_FIFO_STAT_EMPTY_BITS));
     WAITFIFOEMPTY();
@@ -48,7 +51,7 @@ static inline void start_hstx(void) {
     gpio_set_function(PIN_HS_CLK_P, GPIO_FUNC_HSTX);
     gpio_set_function(PIN_HS_CLK_N, GPIO_FUNC_HSTX);
     DELAY_NS(200);
-    dma_channel_transfer_from_buffer_now(0,buffer2,32); //zero
+    dma_channel_transfer_from_buffer_now(0,lead_in_zeros,32); //zero
 
 
     gpio_put(PIN_LS_D_P, 0);
@@ -63,8 +66,8 @@ static inline void start_hstx(void) {
 
 static inline void stop_hstx(void) {
 //TODO RUNOUT richtig
-    gpio_set_function(PIN_HS_D0_P, GPIO_FUNC_SIO/*GPIO_FUNC_SIO*/);
-    gpio_set_function(PIN_HS_D0_N, GPIO_FUNC_SIO/*GPIO_FUNC_SIO*/);
+    gpio_set_function(PIN_HS_D0_P, GPIO_FUNC_SIO);
+    gpio_set_function(PIN_HS_D0_N, GPIO_FUNC_SIO);
     gpio_put(PIN_LS_D_P, 1);
     gpio_put(PIN_LS_D_N, 1);
     gpio_put(PIN_HS_D0_P, 1);
@@ -74,10 +77,10 @@ static inline void stop_hstx(void) {
     while (!(hstx_fifo_hw->stat & HSTX_FIFO_STAT_EMPTY_BITS));
     WAITFIFOEMPTY();
 
-    gpio_set_function(PIN_HS_CLK_P, GPIO_FUNC_SIO/*GPIO_FUNC_SIO*/);
-    gpio_set_function(PIN_HS_CLK_N, GPIO_FUNC_SIO/*GPIO_FUNC_SIO*/);
-    gpio_set_function(PIN_HS_D0_P, GPIO_FUNC_SIO/*GPIO_FUNC_SIO*/);
-    gpio_set_function(PIN_HS_D0_N, GPIO_FUNC_SIO/*GPIO_FUNC_SIO*/);
+    gpio_set_function(PIN_HS_CLK_P, GPIO_FUNC_SIO);
+    gpio_set_function(PIN_HS_CLK_N, GPIO_FUNC_SIO);
+    gpio_set_function(PIN_HS_D0_P, GPIO_FUNC_SIO);
+    gpio_set_function(PIN_HS_D0_N, GPIO_FUNC_SIO);
     gpio_put_masked(0x000FF000,0x000FF000);
 }
 
@@ -146,7 +149,6 @@ void mipi_init(void) {
 
 
     //#define SDR 0   
-
     #ifdef SDR
         hstx_ctrl_hw->bit[PIN_HS_D0_P - FIRST_HSTX_PIN] =
         (0u << HSTX_CTRL_BIT0_SEL_P_LSB) |
@@ -224,20 +226,16 @@ void __not_in_flash_func(mipiCsiFrameEnd)(void) {
 
 void __not_in_flash_func(mipiCsiSendLong)(int type, uint8_t *data, int len) {
 
-    uint8_t preamble[5] ={0xB8,0x22,0xA0,0x05,0x1e};
-    uint8_t end[2] ={0x00,0xff};
-    
+    static uint8_t combined_buffer[MAX_TOTAL_LEN]; 
+    uint8_t preamble[PREAMBLE_LEN] = {0xB8, 0x22, 0xA0, 0x05, 0x1e};
+    uint8_t end[END_LEN] = {0x00, 0xff};
+    memcpy(combined_buffer, preamble, PREAMBLE_LEN);
+    memcpy(combined_buffer + PREAMBLE_LEN, data, len); 
+    memcpy(combined_buffer + PREAMBLE_LEN + len, end, END_LEN);
+    int total_len_this_call = PREAMBLE_LEN + len + END_LEN;
+
     start_hstx();    
-
-    dma_channel_transfer_from_buffer_now(0,preamble,5);
+    dma_channel_transfer_from_buffer_now(0, combined_buffer, total_len_this_call);
     dma_channel_wait_for_finish_blocking(0);
-
-    dma_channel_transfer_from_buffer_now(0,data,len);
-    dma_channel_wait_for_finish_blocking(0);
-
-    dma_channel_transfer_from_buffer_now(0,end,2);
-    dma_channel_wait_for_finish_blocking(0);
-
     stop_hstx();
-
-    }
+}

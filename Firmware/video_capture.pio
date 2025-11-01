@@ -5,20 +5,16 @@
 ;pull
 ;mov X, OSR
 
-wait 1 gpio 23 [5]
-wait 0 gpio 23 [5]
-wait 1 gpio 23 [5]
+wait 1 gpio 23 [6]
+wait 0 gpio 23 [6]
+wait 1 gpio 23 [6]
 wait 0 gpio 20
 
 pixelloop:
-    wait 1 gpio 20[5]
+    wait 1 gpio 20[6]
     in pins, 32
-    ;nop[8]
-    ;in pins, 32
-    wait 0 gpio 20[5]
+    wait 0 gpio 20[6]
     in pins, 32
-    ;nop[8]
-    ;in pins, 32
     jmp x-- pixelloop
 ;.wrap 
 

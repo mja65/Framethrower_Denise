@@ -67,7 +67,7 @@ volatile bool is_odd_field = true;
 volatile bool isPAL_prev = true;
 volatile bool clear_screen = false;
 
-volatile int scanline_level = 3;
+volatile int scanline_level = 4;
 volatile int scanline_level_laced = 4;
 
 // =============================================================================
@@ -95,10 +95,6 @@ void __not_in_flash_func(pio_irq_handler)() {
     }
 }
 
-
-// =============================================================================
-// --- Hilfsfunktionen ---
-// =============================================================================
 
 //TODO -> RGB444 zu RGB565 kann eventuell der HSTX Expander-Block machen
 //Optimized to 9 cycles -> ~35Mpix/sec @ 320Mhz
@@ -149,14 +145,20 @@ static inline uint16_t __attribute__((always_inline)) __not_in_flash_func(conver
 }
 
 void __not_in_flash_func(set_brightness_fast_levels)(uint16_t* line, int count, int level) {
+
+    //if (level >= 4) {
+    //    return;
+    //}
+
     uint32_t* p32 = (uint32_t*)line;
     int loop_count = count >> 1;
 
-    if (level >= 4) {
-        return;
-    }
-
     switch (level) {
+        case 4:{
+            return;
+            };
+            break;
+
         case 3: { // ~75% Helligkeit
             const uint32_t mask25 = 0xE79CE79C;
             __asm volatile (
@@ -243,7 +245,7 @@ void __not_in_flash_func(get_pio_line)(uint16_t* line_buffer) {
 void setup_vsync_detect_sm(uint offset) {
     sm_vsync = pio_claim_unused_sm(pio_video, true);
     pio_sm_config c = vsync_detect_program_get_default_config(offset);
-    sm_config_set_clkdiv(&c, 32.4f); //PIO SM für Vsync läuft mit ~10MHz
+    sm_config_set_clkdiv(&c, 34.8f); //PIO SM für Vsync läuft mit ~10MHz
     pio_gpio_init(pio_video, csync);
     gpio_set_dir(csync, GPIO_IN);
     sm_config_set_jmp_pin(&c, csync);
@@ -317,7 +319,7 @@ int __not_in_flash_func(main)(void) {
         QMI_M0_TIMING_CLKDIV_BITS | QMI_M0_TIMING_RXDELAY_BITS
     );
     __asm__ __volatile__("dmb sy");
-    set_sys_clock_khz(324000, true);
+    set_sys_clock_khz(348000, true);
 
     // Initialisiere alle GPIOs
     for (uint i = 0; i <= 47; i++) {
@@ -372,13 +374,13 @@ int __not_in_flash_func(main)(void) {
         } else {
             // Frame wird aktiv gelesen und gesendet
             if(video_go){
-                dma_memcpy2(line2,line1, ACTIVE_VIDEO*2);
+                dma_memcpy_non_block(line2,line1, ACTIVE_VIDEO*2);
                 video_go=false; 
 
                 if(laced) {
                     if(isPAL){
                         if (is_odd_field) {
-                            memcpy(temp_scanline,line2,ACTIVE_VIDEO*2);
+                            dma_memcpy(temp_scanline,line2,ACTIVE_VIDEO*2);
                             set_brightness_fast_levels(temp_scanline, ACTIVE_VIDEO,scanline_level_laced); 
                             mipiCsiSendLong(0x22, (uint8_t*)temp_scanline, ACTIVE_VIDEO*2);
                             mipiCsiSendLong(0x22, (uint8_t*) framebuffer + (ACTIVE_VIDEO*2 * lines_read_count), ACTIVE_VIDEO*2);
@@ -389,7 +391,7 @@ int __not_in_flash_func(main)(void) {
                         }
                     }else{
                         if (!is_odd_field) {                            
-                            memcpy(temp_scanline,line2,ACTIVE_VIDEO*2);
+                            dma_memcpy(temp_scanline,line2,ACTIVE_VIDEO*2);
                             set_brightness_fast_levels(temp_scanline, ACTIVE_VIDEO,scanline_level_laced); 
                             mipiCsiSendLong(0x22, (uint8_t*)temp_scanline, ACTIVE_VIDEO*2);
                             mipiCsiSendLong(0x22, (uint8_t*) framebuffer + (ACTIVE_VIDEO*2 * lines_read_count), ACTIVE_VIDEO*2);
@@ -399,7 +401,7 @@ int __not_in_flash_func(main)(void) {
                             mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
                         }
                     }
-                    dma_memcpy3(framebuffer + (ACTIVE_VIDEO * lines_read_count),line2, ACTIVE_VIDEO*2);
+                    dma_memcpy_non_block(framebuffer + (ACTIVE_VIDEO * lines_read_count),line2, ACTIVE_VIDEO*2);
                 } else {
                     mipiCsiSendLong(0x22, (uint8_t*)line2, ACTIVE_VIDEO*2);
                     set_brightness_fast_levels(line2, ACTIVE_VIDEO,scanline_level); 

@@ -97,7 +97,7 @@ void __not_in_flash_func(dma_memcpy)(void *dst, const void *src, size_t len)
     dma_channel_wait_for_finish_blocking(1);
 }
 
-void __not_in_flash_func(dma_memcpy2)(void *dst, const void *src, size_t len)
+void __not_in_flash_func(dma_memcpy_non_block)(void *dst, const void *src, size_t len)
 {
 
     dma_channel_config c = dma_channel_get_default_config(2);
@@ -114,87 +114,4 @@ void __not_in_flash_func(dma_memcpy2)(void *dst, const void *src, size_t len)
         len / 4, // Anzahl der 32-Bit-Wörter
         true     // Starte den Transfer
     );
-    //dma_channel_wait_for_finish_blocking(2);
-}
-
-void __not_in_flash_func(dma_memcpy3)(void *dst, const void *src, size_t len)
-{
-
-    dma_channel_config c = dma_channel_get_default_config(3);
-    channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
-    channel_config_set_read_increment(&c, true);
-    channel_config_set_write_increment(&c, true);
-    channel_config_set_dreq(&c, DREQ_FORCE);
-    channel_config_set_high_priority( &c, true);
-    dma_channel_configure(
-        3,
-        &c,
-        dst,     // Zieladresse
-        src,     // Quelladresse
-        len / 4, // Anzahl der 32-Bit-Wörter
-        true     // Starte den Transfer
-    );
-    //dma_channel_wait_for_finish_blocking(3);
-}
-
-
-
-
-bool __not_in_flash_func(fifo_write_buffer_dma)(fifo_t *f, const uint16_t *buffer, uint32_t count) {
-    // 1. Prüfen, ob genügend freier Platz vorhanden ist.
-    uint32_t available_space = (f->head - f->tail - 1) & (FIFO_SIZE - 1);
-    if (count > available_space) {
-        return false; // Nicht genug Platz
-    }
-
-    // 2. Prüfen, ob ein Umbruch am Array-Ende nötig ist.
-    if (f->tail + count > FIFO_SIZE) {
-        // --- Fall 2: Umbruch nötig -> Zwei DMA-Transfers ---
-
-        // Teil 1: Vom aktuellen tail bis zum Ende des Arrays
-        uint32_t part1_count = FIFO_SIZE - f->tail;
-        dma_memcpy((void*)&f->buffer[f->tail], (const void*)buffer, part1_count * sizeof(uint16_t));
-        
-        // Teil 2: Der Rest vom Anfang des Arrays
-        uint32_t part2_count = count - part1_count;
-        dma_memcpy((void*)&f->buffer[0], (const void*)(buffer + part1_count), part2_count * sizeof(uint16_t));
-        
-    } else {
-        // --- Fall 1: Kein Umbruch -> Ein DMA-Transfer ---
-        dma_memcpy((void*)&f->buffer[f->tail], (const void*)buffer, count * sizeof(uint16_t));
-    }
-
-    // 3. WICHTIG: Den tail-Zeiger erst NACH Abschluss des DMA-Transfers aktualisieren.
-    f->tail = (f->tail + count) & (FIFO_SIZE - 1);
-
-    return true;
-}
-
-bool __not_in_flash_func(fifo_read_buffer_dma)(fifo_t *f, uint16_t *buffer, uint32_t count) {
-    // 1. Prüfen, ob genügend Elemente zum Lesen im FIFO sind.
-    if (fifo_get_level(f) < count) {
-        return false; // Nicht genug Daten
-    }
-
-    // 2. Prüfen, ob ein Umbruch am Array-Ende nötig ist.
-    if (f->head + count > FIFO_SIZE) {
-        // --- Fall 2: Umbruch nötig -> Zwei DMA-Transfers ---
-
-        // Teil 1: Vom aktuellen head bis zum Ende des Arrays
-        uint32_t part1_count = FIFO_SIZE - f->head;
-        dma_memcpy2((void*)buffer, (const void*)&f->buffer[f->head], part1_count * sizeof(uint16_t));
-
-        // Teil 2: Der Rest vom Anfang des Arrays
-        uint32_t part2_count = count - part1_count;
-        dma_memcpy2((void*)(buffer + part1_count), (const void*)&f->buffer[0], part2_count * sizeof(uint16_t));
-
-    } else {
-        // --- Fall 1: Kein Umbruch -> Ein DMA-Transfer ---
-        dma_memcpy2((void*)buffer, (const void*)&f->buffer[f->head], count * sizeof(uint16_t));
-    }
-
-    // 3. WICHTIG: Den head-Zeiger erst NACH Abschluss des DMA-Transfers aktualisieren.
-    f->head = (f->head + count) & (FIFO_SIZE - 1);
-
-    return true;
 }

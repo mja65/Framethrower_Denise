@@ -46,9 +46,8 @@ CMAKE_ASM_FLAGS_RELEASE:STRING=-g -O3 -DNDEBUG
 //Flags used by the ASM compiler during RELWITHDEBINFO builds.
 CMAKE_ASM_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
-//Choose the type of build, options are: 'Debug', 'Release', 'MinSizeRel',
-// 'RelWithDebInfo'.
-CMAKE_BUILD_TYPE:STRING=Release
+//No help, variable specified on the command line.
+CMAKE_BUILD_TYPE:STRING=Debug
 
 //CXX compiler
 CMAKE_CXX_COMPILER:STRING=C:/Users/claud/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-g++.exe
@@ -122,6 +121,9 @@ CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Enable/Disable output of build database during the build.
 CMAKE_EXPORT_BUILD_DATABASE:BOOL=
+
+//No help, variable specified on the command line.
+CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
 
 //Value Computed by CMake.
 CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=Y:/Projects/FramethrowerDenise/Framethrower_Denise/Firmware/build/CMakeFiles/pkgRedirects
@@ -268,7 +270,7 @@ Framethrower_Denise_IS_TOP_LEVEL:STATIC=ON
 Framethrower_Denise_SOURCE_DIR:STATIC=Y:/Projects/FramethrowerDenise/Framethrower_Denise/Firmware
 
 //PICO target board (e.g. pico, pico2)
-PICO_BOARD:STRING=pico2
+PICO_BOARD:STRING=pimoroni_pga2350
 
 //PICO board header directories
 PICO_BOARD_HEADER_DIRS:STRING=
@@ -331,7 +333,7 @@ PICO_STDIO_UART:BOOL=ON
 PICO_STDIO_USB:BOOL=OFF
 
 //No help, variable specified on the command line.
-Python3_EXECUTABLE:UNINITIALIZED=c:/Python311/python.exe
+Python3_EXECUTABLE:STRING=c:/Python311/python.exe
 
 //Value Computed by CMake
 pico_sdk_BINARY_DIR:STATIC=Y:/Projects/FramethrowerDenise/Framethrower_Denise/Firmware/build/pico-sdk
@@ -368,8 +370,6 @@ CMAKE_ASM_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_ASM_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_ASM_FLAGS_RELWITHDEBINFO
 CMAKE_ASM_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//STRINGS property for variable: CMAKE_BUILD_TYPE
-CMAKE_BUILD_TYPE-STRINGS:INTERNAL=Debug;Release;MinSizeRel;RelWithDebInfo
 //This is the directory where this CMakeCache.txt was created
 CMAKE_CACHEFILE_DIR:INTERNAL=y:/Projects/FramethrowerDenise/Framethrower_Denise/Firmware/build
 //Major version of cmake used to create the current loaded cache

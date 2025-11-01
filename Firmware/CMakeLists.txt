@@ -23,7 +23,10 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico2 CACHE STRING "Board type")
+#set(PICO_BOARD pico2 CACHE STRING "Board type")
+
+#set(PICO_BOARD_HEADER_DIRS ${CMAKE_SOURCE_DIR})
+set(PICO_BOARD pimoroni_pga2350 CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -40,8 +43,9 @@ add_executable(Framethrower_Denise Framethrower_Denise.c mipi.c fifo.c)
 pico_set_program_name(Framethrower_Denise "Framethrower_Denise")
 pico_set_program_version(Framethrower_Denise "0.1")
 
-# Generate PIO header
+# Generate PIO headers
 pico_generate_pio_header(Framethrower_Denise ${CMAKE_CURRENT_LIST_DIR}/video_capture.pio)
+pico_generate_pio_header(Framethrower_Denise ${CMAKE_CURRENT_LIST_DIR}/rga_access.pio)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(Framethrower_Denise 0)
@@ -66,11 +70,12 @@ target_link_libraries(Framethrower_Denise
 
 target_compile_definitions(Framethrower_Denise PRIVATE
         PLL_SYS_REFDIV=1
-        PLL_SYS_VCO_FREQ_HZ=1296000000
+        PLL_SYS_VCO_FREQ_HZ=1344000000
         PLL_SYS_POSTDIV1=4
         PLL_SYS_POSTDIV2=1
-        SYS_CLK_HZ=324000000
+        SYS_CLK_HZ=336000000
         PICO_XOSC_STARTUP_DELAY_MULTIPLIER=128 #this gives the cheap jlcpcb crystal a bit time to stabilize...
+        #PICO_PIO_USE_GPIO_BASE=1
 
         #PLL_USB_REFDIV=2
         #PLL_USB_VCO_FREQ_HZ=1350000000
@@ -81,6 +86,6 @@ target_compile_definitions(Framethrower_Denise PRIVATE
 
 set_property(TARGET Framethrower_Denise APPEND_STRING PROPERTY LINK_FLAGS "-Wl,--print-memory-usage")
 set_property(TARGET Framethrower_Denise PROPERTY COMPILE_WARNING_AS_ERROR ON)
-
+add_compile_definitions(PICO_PIO_USE_GPIO_BASE=1)
 pico_add_extra_outputs(Framethrower_Denise)
 

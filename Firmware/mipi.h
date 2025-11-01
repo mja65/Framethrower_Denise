@@ -87,7 +87,7 @@ void DMASetup(uint8_t *data);
 /**
  * @brief Die Taktfrequenz des Systems (Core Clock) in Kilohertz (kHz).
  */
-#define FCLK_KHZ 300000
+#define FCLK_KHZ 330000
 
 /**
  * @brief Anzahl der Taktzyklen, die eine Iteration der Assembler-Warteschleife benötigt.
