@@ -41,6 +41,8 @@ Don't forget to put all parameters in just one line, no new line.
 unicam.boot unicam.integer
 ```
 
+Also please set the HDMI vertical frequency to 50Hz for a PAL Amiga.
+
 ## Demo
 Recorded directly from the Pi HDMI Output. RTG at 720p
 
