@@ -78,7 +78,7 @@ static inline void stop_hstx(void) {
 }
 
 
-void dma_handler() {
+void __not_in_flash_func(dma_handler)() {
     // Clear the interrupt request.
     dma_hw->ints0 = 1u << 0;
     stop_hstx();
