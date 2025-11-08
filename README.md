@@ -7,6 +7,8 @@ Framethrower samples the Amiga Video from Denise,converts it to a MIPI CSI2 data
 - [Interactive BOM](https://htmlpreview.github.io/?https://github.com/PiStorm/Framethrower_Denise/blob/main/Hardware/Interactive_BOM/InteractiveBOM_Framethrower_Denise_Rev1.html)
 
   The Firmware is build with VSCode / PicoSDK 2.x
+
+  Basic Setup and Information :arrow_forward: [	**Guide	**](setup.md) :arrow_backward:
   
   Precompiled Firmware can be found here [Firmware](Firmware/build/Framethrower_Denise.uf2)
   
@@ -20,7 +22,6 @@ Its still a work in progress, but I want to release the project now
 - :soon: Amiga based config tool (e.g. for scanlines)
 - :x: Amiga audio passtrough
 - :x: Amiga based firmware update tool
-
 
 ## Authors
 Claude Schwarz
