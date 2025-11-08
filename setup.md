@@ -28,13 +28,43 @@ Keep in mind, with cmdline.txt all parameters ***must*** be written in just one 
 By adding these parameters at the end of the old parameter list you can enable Framethrower
 
 
+
+
 ```unicam.boot unicam.integer``` 
 
 This enables integer/pixel perfect passtrough and automatic RTG/Native switching
 
+
+
 ```unicam.boot unicam.smooth unicam.b=20 unicam.c=0 unicam.phase=60```
 
 This enables scaled to 4:3 fullscreen passtrough and automatic RTG/Native switching
+
+
+
+
+
+Its advised to set the HDMI output to 50Hz for a PAL Amiga, otherwise you likely notice strong tearing effects.
+To do this here are exemplary two settings for config.txt
+
+720p50Hz Output :
+
+```
+disable_overscan=1
+# ScreenMode: 720p 50hz
+hdmi_group=1
+hdmi_mode=19
+```
+
+
+1080p50Hz Output :
+
+```
+disable_overscan=1
+# ScreenMode: 1080p 50hz
+hdmi_group=1
+hdmi_mode=31
+```
 
 
 ## Framethrower Firmware update
