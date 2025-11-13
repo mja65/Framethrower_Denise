@@ -70,14 +70,15 @@ hdmi_mode=31
 ## Framethrower Firmware update
 
 At a later stage there will be a Amiga based Firmware update utility, but until then Firmware updates
-must be done by the build in USB-C interface. No driver or special tools are needed for that
+must be done by the build in USB-C interface. No driver or special tools are needed for that.
+Just make sure you use a USB-C to USB-A cable, as a direct USB-C to USB-C connection wont work
 
 Precompiled Firmware .UF2, ready to flash : [Firmware](https://github.com/PiStorm/Framethrower_Denise/raw/refs/heads/main/Firmware/build/Framethrower_Denise.uf2)
 
 1. Power off the Amiga
 2. Press and hold the button on Framethrower
 3. While the button is still pressed, power on the Amiga
-4. You can release now the button and connect a USB-C Cable to Framethrower
+4. You can release now the button and connect a USB-C to USB-A Cable to Framethrower
 5. Connecting the USB Cable to a PC immediatly a drive called "RP2350" will show up
 6. Just copy or drag&drop the Firmware .UF2 file to the RP2350 drive
 7. The drive will disapear, the Framethrower is updated
